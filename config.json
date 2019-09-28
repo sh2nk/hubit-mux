@@ -1,0 +1,9 @@
+{
+    "addr":":8080",
+    "device":"video1",
+    "wb":false,
+    "serv-url":"localhost",
+    "image-format":"JPEG",
+    "width":1280,
+    "height":720
+}
