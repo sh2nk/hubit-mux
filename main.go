@@ -3,19 +3,26 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"hubit-mux/config"
-	"hubit-mux/view"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
 	"strconv"
+
+	"hubit-mux/config"
+	"hubit-mux/streamer"
+	"hubit-mux/view"
 )
 
 var (
 	conf   *config.Config
 	send   chan *bytes.Buffer
 	camera *view.Camera
+
+	//Пул клиентов, получающий поток
+	pool = streamer.Pool{
+		Streams: make(map[string]chan *bytes.Buffer, 12),
+	}
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
