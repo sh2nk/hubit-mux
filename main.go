@@ -12,6 +12,8 @@ import (
 	"hubit-mux/config"
 	"hubit-mux/streamer"
 	"hubit-mux/view"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 var (
@@ -20,7 +22,7 @@ var (
 	camera *view.Camera
 
 	//Пул клиентов, получающий поток
-	pool = streamer.Pool{
+	pool = &streamer.Pool{
 		Streams: make(map[string]chan *bytes.Buffer, 12),
 	}
 )
@@ -31,13 +33,25 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {
-	<-send
 	const boundary = `frame`
 	w.Header().Set("Content-Type", `multipart/x-mixed-replace;boundary=`+boundary)
 	multipartWriter := multipart.NewWriter(w)
 	multipartWriter.SetBoundary(boundary)
-	for {
-		buf := <-send
+
+	name := uuid.Must(uuid.NewV4()).String()
+
+	func() {
+		pool.Lock()
+		defer pool.Unlock()
+		pool.Streams[name] = send
+	}()
+	defer func() {
+		pool.Lock()
+		defer pool.Unlock()
+		delete(pool.Streams, name)
+	}()
+
+	for buf := range send {
 		image := buf.Bytes()
 		iw, err := multipartWriter.CreatePart(textproto.MIMEHeader{
 			"Content-type":   []string{"image/jpeg"},
@@ -71,7 +85,7 @@ func main() {
 	}
 
 	send = make(chan *bytes.Buffer)
-	go camera.Read(send)
+	go camera.Read(send, pool)
 
 	log.Printf("Listening on %s...\n", conf.Addr)
 	http.HandleFunc("/stream", stream)
