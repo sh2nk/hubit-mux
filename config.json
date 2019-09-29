@@ -2,7 +2,7 @@
     "addr":":8080",
     "device":"video1",
     "wb":false,
-    "serv-url":"localhost",
+    "serv-url":"http://localhost:5000/api/jpeg",
     "image-format":"JPEG",
     "width":640,
     "height":480

@@ -9,7 +9,7 @@ import (
 )
 
 //Read - читаем поток с камеры
-func (cam *Camera) Read(c chan *bytes.Buffer, pool *streamer.Pool) {
+func (cam *Camera) Read(pool *streamer.Pool) {
 	var err error
 
 	// Универсальная обработка ошибок

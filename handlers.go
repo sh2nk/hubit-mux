@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"mime/multipart"
@@ -22,12 +23,13 @@ func stream(w http.ResponseWriter, r *http.Request) {
 	multipartWriter := multipart.NewWriter(w)
 	multipartWriter.SetBoundary(boundary)
 
+	stream := make(chan *bytes.Buffer)
 	name := uuid.Must(uuid.NewV4()).String()
 
 	func() {
 		pool.Lock()
 		defer pool.Unlock()
-		pool.Streams[name] = send
+		pool.Streams[name] = stream
 	}()
 	defer func() {
 		pool.Lock()
@@ -35,7 +37,7 @@ func stream(w http.ResponseWriter, r *http.Request) {
 		delete(pool.Streams, name)
 	}()
 
-	for buf := range send {
+	for buf := range stream {
 		image := buf.Bytes()
 		iw, err := multipartWriter.CreatePart(textproto.MIMEHeader{
 			"Content-type":   []string{"image/jpeg"},

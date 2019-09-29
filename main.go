@@ -38,8 +38,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	send = make(chan *bytes.Buffer)
-	go camera.Read(send, pool)
+	go camera.Read(pool)
+	go post(conf.ServURL)
 
 	log.Printf("Listening on %s...\n", conf.Addr)
 	http.HandleFunc("/stream", stream)
