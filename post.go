@@ -25,15 +25,10 @@ func post(url string) {
 	}()
 
 	for buf := range stream {
-		req, err := http.NewRequest("POST", url, buf)
-		req.Header.Set("Content-Type", "image/jpeg")
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
+		resp, err := http.Post(url, "application/octet-stream", buf)
 		if err != nil {
-			log.Fatal("Falied POST ", err)
+			log.Fatal(err)
 		}
-		defer resp.Body.Close()
 
 		bytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
