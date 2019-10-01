@@ -39,7 +39,7 @@ func main() {
 	}
 
 	go camera.Read(pool)
-	go post(conf.ServURL)
+	go post(conf.ServURL, conf.Width, conf.Height, conf.Resize)
 
 	log.Printf("Listening on %s...\n", conf.Addr)
 	http.HandleFunc("/stream", stream)

@@ -9,4 +9,5 @@ type Config struct {
 	Format  string `json:"image-format"`
 	Width   uint32 `json:"width"`
 	Height  uint32 `json:"height"`
+	Resize  uint32 `json:"resize-level"`
 }
