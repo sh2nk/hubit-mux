@@ -2,14 +2,14 @@ package view
 
 import (
 	"bytes"
-	"hubit-mux/streamer"
+	"hubit-mux/utils"
 	"log"
 
 	"github.com/blackjack/webcam"
 )
 
-//Read - читаем поток с камеры
-func (cam *Camera) Read(pool *streamer.Pool) {
+//ReadAndStream - читаем поток с камеры
+func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 	var err error
 
 	// Универсальная обработка ошибок
@@ -49,6 +49,8 @@ func (cam *Camera) Read(pool *streamer.Pool) {
 		if len(frame) == 0 {
 			continue
 		}
+
+		post(utils.Config.StreamURL, frame, int(utils.Config.Width), int(utils.Config.Height), int(utils.Config.Resize))
 
 		buf := new(bytes.Buffer)
 		buf.Grow(len(frame) + 100)

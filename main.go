@@ -2,47 +2,46 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 
-	"hubit-mux/config"
-	"hubit-mux/streamer"
+	"hubit-mux/utils"
 	"hubit-mux/view"
 )
 
 var (
-	conf   *config.Config
 	send   chan *bytes.Buffer
 	camera *view.Camera
 
 	//Пул клиентов, получающий поток
-	pool = &streamer.Pool{
+	pool = &utils.Pool{
 		Streams: make(map[string]chan *bytes.Buffer, 12),
 	}
 )
 
 func main() {
-	conf = new(config.Config)
-	err := conf.Parse("config.json")
+	err := utils.Config.Parse("config.json")
 	if err != nil {
 		log.Fatal("Error parsing config ", err)
 	}
 
-	camera, err := view.NewCamera(conf.Device, conf.WB)
+	fmt.Println(utils.Config)
+
+	camera, err := view.NewCamera(utils.Config.Device, utils.Config.WB)
 	if err != nil {
 		log.Fatal("Camera init error ", err)
 	}
 	defer camera.Close()
 
-	if err = camera.Setup(conf.Format, conf.Width, conf.Height); err != nil {
+	if err = camera.Setup(utils.Config.Format, utils.Config.Width, utils.Config.Height); err != nil {
 		log.Fatal(err)
 	}
 
-	go camera.Read(pool)
-	go post(conf.ServURL, conf.Width, conf.Height, conf.Resize)
+	go camera.ReadAndStream(pool)
 
-	log.Printf("Listening on %s...\n", conf.Addr)
+	log.Printf("Listening on %s...\n", utils.Config.Addr)
 	http.HandleFunc("/stream", stream)
 	http.HandleFunc("/", index)
-	http.ListenAndServe(conf.Addr, nil)
+	http.ListenAndServe(utils.Config.Addr, nil)
 }

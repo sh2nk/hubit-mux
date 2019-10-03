@@ -1,4 +1,4 @@
-package config
+package utils
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 )
 
 //Parse - метод для парсинга конфигов
-func (c *Config) Parse(path string) error {
+func (c *Configuration) Parse(path string) error {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
