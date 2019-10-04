@@ -8,6 +8,11 @@ import (
 	"github.com/blackjack/webcam"
 )
 
+type framebuf struct {
+	stream *bytes.Buffer
+	post   *bytes.Buffer
+}
+
 //ReadAndStream - читаем поток с камеры
 func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 	var err error
@@ -50,19 +55,21 @@ func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 			continue
 		}
 
-		post(utils.Config.StreamURL, frame, int(utils.Config.Width), int(utils.Config.Height), int(utils.Config.Resize))
-
-		buf := new(bytes.Buffer)
-		buf.Grow(len(frame) + 100)
-		buf.Write(frame)
+		f := framebuf{new(bytes.Buffer), new(bytes.Buffer)}
+		f.post.Grow(len(frame) + 100)
+		f.stream.Grow(len(frame) + 100)
+		f.post.Write(frame)
+		f.stream.Write(frame)
 
 		func() {
 			pool.RLock()
 			defer pool.RUnlock()
 
 			for name := range pool.Streams {
-				pool.Streams[name] <- buf
+				pool.Streams[name] <- f.stream
 			}
 		}()
+
+		go post(utils.Config.StreamURL, f.post, int(utils.Config.Width), int(utils.Config.Height), int(utils.Config.Resize))
 	}
 }

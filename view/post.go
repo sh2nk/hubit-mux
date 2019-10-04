@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"image"
 	"image/jpeg"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,8 +12,8 @@ import (
 	"golang.org/x/image/draw"
 )
 
-func post(url string, frame []byte, w int, h int, level int) {
-	src, _, err := image.Decode(bytes.NewBuffer(frame))
+func post(url string, frame io.Reader, w int, h int, level int) {
+	src, _, err := image.Decode(frame)
 	if err != nil {
 		log.Fatal(err)
 	}
