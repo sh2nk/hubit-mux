@@ -41,6 +41,7 @@ func main() {
 	go camera.ReadAndStream(pool)
 
 	log.Printf("Listening on %s...\n", utils.Config.Addr)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/stream", stream)
 	http.HandleFunc("/", index)
 	http.ListenAndServe(utils.Config.Addr, nil)

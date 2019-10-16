@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"fmt"
+	"html/template"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -13,8 +13,11 @@ import (
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, `<img src="/stream">`)
+	tmpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal("Parsing error", err)
+	}
+	tmpl.Execute(w, nil)
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {
