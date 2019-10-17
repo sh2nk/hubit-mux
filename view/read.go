@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"hubit-mux/utils"
 	"log"
+	"strings"
 
 	"github.com/blackjack/webcam"
 )
@@ -66,12 +67,16 @@ func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 			defer pool.RUnlock()
 
 			for name := range pool.Streams {
-				pool.Streams[name] <- f.stream
+				if strings.Contains("yuyv", strings.ToLower(utils.Config.Format)) {
+					pool.Streams[name] <- utils.Yuyv2jpeg(f.stream, utils.Config.Width, utils.Config.Height)
+				} else {
+					pool.Streams[name] <- f.stream
+				}
 			}
 		}()
 
 		if !utils.Config.Debug {
-			go post(utils.Config.StreamURL, f.post, int(utils.Config.Width), int(utils.Config.Height), int(utils.Config.Resize))
+			go post(utils.Config.StreamURL, f.post, utils.Config.Width, utils.Config.Height, int(utils.Config.Resize))
 		}
 	}
 }

@@ -1,13 +1,14 @@
 package view
 
 import (
+	"hubit-mux/utils"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func post(url string, frame io.Reader, w int, h int, level int) {
+func post(url string, frame io.Reader, w, h uint32, level int) {
 	// src, _, err := image.Decode(frame)
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -19,8 +20,7 @@ func post(url string, frame io.Reader, w int, h int, level int) {
 	// if err := jpeg.Encode(buf, dest, nil); err != nil {
 	// 	log.Fatal(err)
 	// }
-
-	resp, err := http.Post(url, "application/octet-stream", frame)
+	resp, err := http.Post(url, "application/octet-stream", utils.Yuyv2jpeg(frame, w, h))
 	if err != nil {
 		log.Fatal(err)
 	}
