@@ -70,6 +70,8 @@ func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 			}
 		}()
 
-		go post(utils.Config.StreamURL, f.post, int(utils.Config.Width), int(utils.Config.Height), int(utils.Config.Resize))
+		if !utils.Config.Debug {
+			go post(utils.Config.StreamURL, f.post, int(utils.Config.Width), int(utils.Config.Height), int(utils.Config.Resize))
+		}
 	}
 }

@@ -5,6 +5,7 @@ type Configuration struct {
 	Addr      string `json:"addr"`
 	Device    string `json:"device"`
 	WB        bool   `json:"wb"`
+	Debug     bool   `json:"debug"`
 	StreamURL string `json:"stream-url"`
 	Format    string `json:"image-format"`
 	Width     uint32 `json:"width"`
