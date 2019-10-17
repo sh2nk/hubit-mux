@@ -15,9 +15,9 @@ import (
 func index(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseGlob("templates/*.html")
 	if err != nil {
-		log.Fatal("Parsing error", err)
+		log.Fatal("Parsing error ", err)
 	}
-	tmpl.Execute(w, nil)
+	tmpl.ExecuteTemplate(w, "index", nil)
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {
