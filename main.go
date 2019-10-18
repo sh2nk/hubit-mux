@@ -42,7 +42,10 @@ func main() {
 
 	log.Printf("Listening on %s...\n", utils.Config.Addr)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/stream", stream)
 	http.HandleFunc("/", index)
+	http.HandleFunc("/view", viewPage)
+	http.HandleFunc("/about", aboutPage)
+	http.HandleFunc("/settings", settingsPage)
+	http.HandleFunc("/stream", stream)
 	http.ListenAndServe(utils.Config.Addr, nil)
 }

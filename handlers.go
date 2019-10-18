@@ -13,11 +13,31 @@ import (
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/view", 301)
+}
+
+func viewPage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseGlob("templates/*.html")
 	if err != nil {
 		log.Fatal("Parsing error ", err)
 	}
 	tmpl.ExecuteTemplate(w, "index", nil)
+}
+
+func aboutPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal("Parsing error ", err)
+	}
+	tmpl.ExecuteTemplate(w, "about", nil)
+}
+
+func settingsPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal("Parsing error ", err)
+	}
+	tmpl.ExecuteTemplate(w, "settings", nil)
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {

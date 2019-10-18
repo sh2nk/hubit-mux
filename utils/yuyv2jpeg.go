@@ -4,18 +4,12 @@ import (
 	"bytes"
 	"image"
 	"image/jpeg"
-	"io"
-	"io/ioutil"
 	"log"
 )
 
 //Yuyv2jpeg - конвертирует кадр из YCbCr в JPEG
-func Yuyv2jpeg(f io.Reader, w, h uint32) *bytes.Buffer {
+func Yuyv2jpeg(frame []byte, w, h uint32) *bytes.Buffer {
 	buf := &bytes.Buffer{}
-	frame, err := ioutil.ReadAll(f)
-	if err != nil {
-		log.Fatal(err)
-	}
 	yuyv := image.NewYCbCr(image.Rect(0, 0, int(w), int(h)), image.YCbCrSubsampleRatio422)
 	for i := range yuyv.Cb {
 		ii := i * 4

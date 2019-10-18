@@ -3,6 +3,7 @@ package view
 import (
 	"bytes"
 	"hubit-mux/utils"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -59,17 +60,26 @@ func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 		f := framebuf{new(bytes.Buffer), new(bytes.Buffer)}
 		f.post.Grow(len(frame) + 100)
 		f.stream.Grow(len(frame) + 100)
-		f.post.Write(frame)
-		f.stream.Write(frame)
 
 		func() {
 			pool.RLock()
 			defer pool.RUnlock()
 
-			for name := range pool.Streams {
-				if strings.Contains("yuyv", strings.ToLower(utils.Config.Format)) {
-					pool.Streams[name] <- utils.Yuyv2jpeg(f.stream, utils.Config.Width, utils.Config.Height)
-				} else {
+			switch {
+			case strings.Contains("yuyv", strings.ToLower(utils.Config.Format)):
+				bytes, err := ioutil.ReadAll(utils.Yuyv2jpeg(frame, utils.Config.Width, utils.Config.Height))
+				if err != nil {
+					return
+				}
+				f.stream.Write(bytes)
+				f.stream.Write(bytes)
+				for name := range pool.Streams {
+					pool.Streams[name] <- f.stream
+				}
+			default:
+				f.stream.Write(frame)
+				f.post.Write(frame)
+				for name := range pool.Streams {
 					pool.Streams[name] <- f.stream
 				}
 			}
