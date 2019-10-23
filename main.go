@@ -23,19 +23,19 @@ var (
 func main() {
 	err := utils.Config.Parse("config.json")
 	if err != nil {
-		log.Fatal("Error parsing config ", err)
+		log.Fatalf("Error parsing config: %+v", err)
 	}
 
 	fmt.Println(utils.Config)
 
 	camera, err := view.NewCamera(utils.Config.Device, utils.Config.WB)
 	if err != nil {
-		log.Fatal("Camera init error ", err)
+		log.Fatalf("Camera init error: %+v", err)
 	}
 	defer camera.Close()
 
 	if err = camera.Setup(utils.Config.Format, utils.Config.Width, utils.Config.Height); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Camera init error: %+v", err)
 	}
 
 	go camera.ReadAndStream(pool)
@@ -47,5 +47,8 @@ func main() {
 	http.HandleFunc("/about", aboutPage)
 	http.HandleFunc("/settings", settingsPage)
 	http.HandleFunc("/stream", stream)
-	http.ListenAndServe(utils.Config.Addr, nil)
+
+	if err = http.ListenAndServe(utils.Config.Addr, nil); err != nil {
+		log.Fatalf("Listen error: %+v", err)
+	}
 }

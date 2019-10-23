@@ -18,38 +18,35 @@ type framebuf struct {
 //ReadAndStream - читаем поток с камеры
 func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 	var err error
+	var frame []byte
 
 	// Универсальная обработка ошибок
 	defer func() {
 		if rec := recover(); rec != nil {
-			// паника!
-			var ok bool
-			if err, ok = rec.(error); !ok {
-				log.Printf("Read panic: %#v", rec)
-			}
+			// Поскольку нет особой обработки ошибки, cast к error без надобности, сразу принт
+			log.Printf("Read panic: %+v", rec)
 		}
 
 		if err != nil {
-			log.Printf("Read error: %#v", err)
+			log.Printf("Read error: %+v", err)
 		}
 	}()
 
-	if err := cam.StartStreaming(); err != nil {
+	if err = cam.StartStreaming(); err != nil {
 		return
 	}
 	defer cam.StopStreaming()
 
 	for {
 		//Таймаут 5 секунд
-		if err := cam.WaitForFrame(5); err != nil {
+		if err = cam.WaitForFrame(5); err != nil {
 			if _, ok := err.(*webcam.Timeout); ok {
 				continue
 			}
 			return
 		}
 
-		frame, err := cam.ReadFrame()
-		if err != nil {
+		if frame, err = cam.ReadFrame(); err != nil {
 			return
 		}
 
@@ -57,36 +54,23 @@ func (cam *Camera) ReadAndStream(pool *utils.Pool) {
 			continue
 		}
 
-		f := framebuf{new(bytes.Buffer), new(bytes.Buffer)}
-		f.post.Grow(len(frame) + 100)
-		f.stream.Grow(len(frame) + 100)
+		if strings.Contains("yuyv", strings.ToLower(utils.Config.Format)) {
+			if frame, err = ioutil.ReadAll(utils.Yuyv2jpeg(frame, utils.Config.Width, utils.Config.Height)); err != nil {
+				return
+			}
+		}
 
 		func() {
 			pool.RLock()
 			defer pool.RUnlock()
 
-			switch {
-			case strings.Contains("yuyv", strings.ToLower(utils.Config.Format)):
-				bytes, err := ioutil.ReadAll(utils.Yuyv2jpeg(frame, utils.Config.Width, utils.Config.Height))
-				if err != nil {
-					return
-				}
-				f.stream.Write(bytes)
-				f.stream.Write(bytes)
-				for name := range pool.Streams {
-					pool.Streams[name] <- f.stream
-				}
-			default:
-				f.stream.Write(frame)
-				f.post.Write(frame)
-				for name := range pool.Streams {
-					pool.Streams[name] <- f.stream
-				}
+			for name := range pool.Streams {
+				pool.Streams[name] <- bytes.NewBuffer(frame)
 			}
 		}()
 
 		if !utils.Config.Debug {
-			go post(utils.Config.StreamURL, f.post, utils.Config.Width, utils.Config.Height, int(utils.Config.Resize))
+			go post(utils.Config.StreamURL, bytes.NewBuffer(frame), utils.Config.Width, utils.Config.Height, int(utils.Config.Resize))
 		}
 	}
 }
