@@ -7,11 +7,13 @@ import (
 	"net/http"
 )
 
+//Face - структура объекта лица
 type Face struct {
 	Contains bool      `json:"contains"`
 	Emotions *Emotions `json:"emotions"`
 }
 
+//Emotions - структура эмоций
 type Emotions struct {
 	Angry     float64 `json:"angry"`
 	Disgusted float64 `json:"disgusted"`
@@ -48,6 +50,6 @@ func post(url string, frame io.Reader, w, h uint32, level int) {
 	}
 
 	if face.Emotions != nil {
-		log.Printf("%.2f%% happy", face.Emotions.Happy*100.0)
+		log.Printf("%.2f%% happy, %.2f%% angry, %.2f%% sad, %.2f%% neutral,", face.Emotions.Happy*100.0, face.Emotions.Angry*100.0, face.Emotions.Sad*100.0, face.Emotions.Neutral*100.0)
 	}
 }
