@@ -1,57 +1,77 @@
 {{define "index"}}
 {{template "header"}}
 <!-- Content -->
-<div class="row">
-	<!-- Stream frame -->
-	<div class="card col p-0 mb-3">
+<div class="row justify-content-center">
+	<div class="justify-content-start card col-9 p-0 mb-3">
+		<!-- Stream frame -->
 		<img class="card-img-top" src="/stream" alt="Card image cap">
-	</div>
-	<!-- Emotion list -->
-	<div class="col-lg-3 mb-5">
-		<ul class="list-group text-center">
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+		<!-- Emotion list -->
+		<div class="card emotion-list text-light position-absolute col-md-4 col-sm-6 p-4 m-4">
+			<h3 class="p-2">Emotions</h3>
+			<div class="media pb-3">
+				<img src="static/svg/happy.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Happy</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-happy" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="media pb-3">
+				<img src="static/svg/neutral.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Neutral</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-neutral" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="media pb-3">
+				<img src="static/svg/angry.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Angry</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-angry" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="media pb-3">
+				<img src="static/svg/disgusted.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Disgusted</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-disgusted" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="media pb-3">
+				<img src="static/svg/surprised.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Surprised</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-surprised" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="media pb-3">
+				<img src="static/svg/sad.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Sad</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-sad" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-			<li class="list-group-item">
-				<h6>Happy</h6>
-				<div class="progress">
-					<div class="progress-bar w-75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="media pb-3">
+				<img src="static/svg/fearful.svg" class="mr-2" height="54rem">
+				<div class="media-body">
+					<h5 class="mt-0">Fearful</h5>
+					<div class="progress">
+						<div class="progress-bar" id="progress-fearful" style="width: 62%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 				</div>
-			</li>
-		</ul>
+			</div>
+		</div>
 	</div>
 </div>
 {{template "footer"}}

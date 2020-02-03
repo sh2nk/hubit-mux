@@ -13,30 +13,32 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var tmpl *template.Template
-
-func init() {
-	var err error
-
-	if tmpl, err = template.ParseGlob("templates/*.html"); err != nil {
-		log.Fatal("Parsing error ", err)
-	}
-}
-
 func index(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/view", 301)
 }
 
 func viewPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal("Parsing error ", err)
+	}
 	tmpl.ExecuteTemplate(w, "index", nil)
 }
 
 func aboutPage(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "about", nil)
+	tmpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal("Parsing error ", err)
+	}
+	tmpl.ExecuteTemplate(w, "index", nil)
 }
 
 func settingsPage(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "settings", nil)
+	tmpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal("Parsing error ", err)
+	}
+	tmpl.ExecuteTemplate(w, "index", nil)
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {

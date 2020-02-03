@@ -7,3 +7,6 @@ build:
 
 run: build
 	@./hubit-mux
+
+setup: build
+	@cp config.json.example config.json
