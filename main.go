@@ -15,7 +15,7 @@ var (
 	camera *view.Camera
 
 	//Пул клиентов, получающий поток
-	pool = &utils.Pool{
+	streamPool = &utils.StreamPool{
 		Streams: make(map[string]chan *bytes.Buffer, 12),
 	}
 )

@@ -30,7 +30,7 @@ func aboutPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Parsing error ", err)
 	}
-	tmpl.ExecuteTemplate(w, "index", nil)
+	tmpl.ExecuteTemplate(w, "about", nil)
 }
 
 func settingsPage(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func settingsPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Parsing error ", err)
 	}
-	tmpl.ExecuteTemplate(w, "index", nil)
+	tmpl.ExecuteTemplate(w, "settings", nil)
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {
