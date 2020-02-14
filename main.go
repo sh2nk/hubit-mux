@@ -8,6 +8,8 @@ import (
 
 	"hubit-mux/utils"
 	"hubit-mux/view"
+
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -17,6 +19,10 @@ var (
 	//Пул клиентов, получающий поток
 	streamPool = &utils.StreamPool{
 		Streams: make(map[string]chan *bytes.Buffer, 12),
+	}
+
+	wsPool = &utils.WSPool{
+		Clients: make(map[string]*websocket.Conn),
 	}
 )
 
@@ -38,7 +44,7 @@ func main() {
 		log.Fatalf("Camera init error: %+v", err)
 	}
 
-	go camera.ReadAndStream(pool)
+	go camera.ReadAndStream(streamPool)
 
 	log.Printf("Listening on %s...\n", utils.Config.Addr)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -47,6 +53,7 @@ func main() {
 	http.HandleFunc("/about", aboutPage)
 	http.HandleFunc("/settings", settingsPage)
 	http.HandleFunc("/stream", stream)
+	http.HandleFunc("/ws", wsServer)
 
 	if err = http.ListenAndServe(utils.Config.Addr, nil); err != nil {
 		log.Fatalf("Listen error: %+v", err)

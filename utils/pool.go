@@ -13,5 +13,7 @@ type StreamPool struct {
 	Streams map[string]chan *bytes.Buffer
 }
 
-//WSPool - пул соединений для вебсокета
-var WSPool map[string]*websocket.Conn
+//WSPool - структура пула клиентов вебсокет сервера
+type WSPool struct {
+	Clients map[string]*websocket.Conn
+}

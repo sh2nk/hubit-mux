@@ -16,7 +16,7 @@ type framebuf struct {
 }
 
 //ReadAndStream - читаем поток с камеры
-func (cam *Camera) ReadAndStream(pool *utils.Pool) {
+func (cam *Camera) ReadAndStream(pool *utils.StreamPool) {
 	var err error
 	var frame []byte
 

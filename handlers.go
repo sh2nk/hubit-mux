@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -10,8 +11,45 @@ import (
 	"net/textproto"
 	"strconv"
 
+	"hubit-mux/ws"
+
+	"github.com/gorilla/websocket"
 	uuid "github.com/satori/go.uuid"
 )
+
+func wsServer(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Fatal("Upgrade connection error:", err)
+	}
+	log.Printf("Upgraded new connection from %s\n", conn.RemoteAddr())
+
+	name := fmt.Sprintf("%v", conn.RemoteAddr())
+	wsPool.Clients[name] = conn
+
+	go func() {
+		for {
+			message, err := ws.Read(conn)
+			if err != nil {
+				log.Println(err)
+				conn.Close()
+				delete(wsPool.Clients, name)
+				return
+			}
+			for _, val := range wsPool.Clients {
+				err := ws.Send(val, message)
+				if err != nil {
+					log.Println(err)
+					conn.Close()
+					delete(wsPool.Clients, name)
+					return
+				}
+			}
+			log.Printf("%s sent: %s\n", conn.RemoteAddr(), string(message.Body))
+		}
+	}()
+}
 
 func index(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/view", 301)
@@ -50,14 +88,14 @@ func stream(w http.ResponseWriter, r *http.Request) {
 	name := uuid.Must(uuid.NewV4()).String()
 
 	func() {
-		pool.Lock()
-		defer pool.Unlock()
-		pool.Streams[name] = stream
+		streamPool.Lock()
+		defer streamPool.Unlock()
+		streamPool.Streams[name] = stream
 	}()
 	defer func() {
-		pool.Lock()
-		defer pool.Unlock()
-		delete(pool.Streams, name)
+		streamPool.Lock()
+		defer streamPool.Unlock()
+		delete(streamPool.Streams, name)
 	}()
 
 	for buf := range stream {
