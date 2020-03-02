@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"hubit-mux/view"
 	"io"
 	"log"
 	"mime/multipart"
@@ -11,7 +12,6 @@ import (
 	"net/textproto"
 	"strconv"
 
-	"hubit-mux/view"
 	"hubit-mux/ws"
 
 	"github.com/gorilla/websocket"
@@ -30,15 +30,24 @@ func wsServer(w http.ResponseWriter, r *http.Request) {
 	wsPool.Clients[name] = conn
 
 	go func() {
-		message := <-view.RawFaceChan
-		for _, val := range wsPool.Clients {
-			err := ws.Send(val, &ws.Message{Type: websocket.TextMessage, Body: message})
+		for {
+			message, err := ws.Read(conn)
 			if err != nil {
 				log.Println(err)
 				conn.Close()
 				delete(wsPool.Clients, name)
 				return
 			}
+			for _, val := range wsPool.Clients {
+				err := ws.Send(val, message)
+				if err != nil {
+					log.Println(err)
+					conn.Close()
+					delete(wsPool.Clients, name)
+					return
+				}
+			}
+			log.Printf("%s sent: %s\n", conn.RemoteAddr(), string(message.Body))
 		}
 	}()
 }
@@ -69,6 +78,10 @@ func settingsPage(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Parsing error ", err)
 	}
 	tmpl.ExecuteTemplate(w, "settings", nil)
+}
+
+func getFaceData(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, string(view.RawFace))
 }
 
 func stream(w http.ResponseWriter, r *http.Request) {

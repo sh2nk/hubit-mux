@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-//RawFaceChan - канал для отправки необработанного json на вебсокет клиенты
-var RawFaceChan chan []byte
+//RawFace - переменная для необработанного json
+var RawFace []byte
 
 //Face - структура объекта лица
 type Face struct {
@@ -46,11 +46,10 @@ func post(url string, frame io.Reader, w, h uint32, level int) {
 	}
 	defer resp.Body.Close()
 
-	rawFace, err := ioutil.ReadAll(resp.Body)
+	RawFace, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	RawFaceChan <- rawFace
 
 	// var face Face
 

@@ -52,7 +52,8 @@ func main() {
 	http.HandleFunc("/about", aboutPage)
 	http.HandleFunc("/settings", settingsPage)
 	http.HandleFunc("/stream", stream)
-	http.HandleFunc("/ws", wsServer)
+	http.HandleFunc("/getface", getFaceData)
+	//http.HandleFunc("/ws", wsServer)
 
 	if err = http.ListenAndServe(utils.Config.Addr, nil); err != nil {
 		log.Fatalf("Listen error: %+v", err)
