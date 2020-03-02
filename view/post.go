@@ -1,12 +1,14 @@
 package view
 
 import (
-	"encoding/json"
-	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
+
+//RawFaceChan - канал для отправки необработанного json на вебсокет клиенты
+var RawFaceChan chan []byte
 
 //Face - структура объекта лица
 type Face struct {
@@ -37,20 +39,27 @@ func post(url string, frame io.Reader, w, h uint32, level int) {
 	// if err := jpeg.Encode(buf, dest, nil); err != nil {
 	// 	log.Fatal(err)
 	// }
+
 	resp, err := http.Post(url, "application/octet-stream", frame)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 
-	var face Face
-
-	if err = json.NewDecoder(resp.Body).Decode(&face); err != nil {
-		log.Printf("Face reading error: %+v", err)
-		return
+	rawFace, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
 	}
+	RawFaceChan <- rawFace
 
-	if face.Emotions != nil {
-		fmt.Printf("%.2f%% happy, %.2f%% angry, %.2f%% sad, %.2f%% neutral,", face.Emotions.Happy*100.0, face.Emotions.Angry*100.0, face.Emotions.Sad*100.0, face.Emotions.Neutral*100.0)
-	}
+	// var face Face
+
+	// if err = json.NewDecoder(resp.Body).Decode(&face); err != nil {
+	// 	log.Printf("Face reading error: %+v", err)
+	// 	return
+	// }
+
+	// if face.Emotions != nil {
+	// 	fmt.Printf("%.2f%% happy, %.2f%% angry, %.2f%% sad, %.2f%% neutral,", face.Emotions.Happy*100.0, face.Emotions.Angry*100.0, face.Emotions.Sad*100.0, face.Emotions.Neutral*100.0)
+	// }
 }

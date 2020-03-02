@@ -1,3 +1,5 @@
+var webSocket = new WebSocket("ws://"+window.location.host+"/ws");
+
 var pHappy = document.getElementById("progress-happy").style;
 var pAngry = document.getElementById("progress-angry").style;
 var pNeutral = document.getElementById("progress-neutral").style;
@@ -6,28 +8,19 @@ var pFearful = document.getElementById("progress-fearful").style;
 var pDisgusted = document.getElementById("progress-disgusted").style;
 var pSurprised = document.getElementById("progress-surprised").style;
 
-var i = 0;
-var increase = true;
+socket.onopen = function () {
+    $('#connectionModalLabel').on('shown.bs.modal', function () {
+        $('#connectionModalLabel').trigger('focus')
+    })
+};
 
-function pUpdate(){
-    pHappy.width = i+10+"%";
-    pSad.width = i+20+"%";
-    pAngry.width = i-10+"%";
-    pNeutral.width = i+"%";
-    pFearful.width = i+5+"%";
-    pDisgusted.width = i+3+"%";
-    pSurprised.width = i-5+"%";
-    if(increase){
-        i++;
-        if(i == 100){
-            increase = false;
-        }
-    } else {
-        i--;
-        if(i == 0){
-            increase = true;
-        }
-    }
-}
-
-let timerId = setInterval(pUpdate, 50);
+socket.onmessage = function (e) {
+    faces = json.parse(e.data)
+    pSurprised.width = faces.emotions.surprised * 100 +"%"
+    pAngry.width = faces.emotions.angry * 100 +"%"
+    pHappy.width = faces.emotions.happy * 100 +"%"
+    pNeutral.width = faces.emotions.neutral * 100 +"%"
+    pFearful.width = faces.emotions.fearful * 100 +"%"
+    pSad.width = faces.emotions.sad * 100 +"%"
+    pDisgusted = faces.emotions.disgusted * 100 +"%"
+};

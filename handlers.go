@@ -11,6 +11,7 @@ import (
 	"net/textproto"
 	"strconv"
 
+	"hubit-mux/view"
 	"hubit-mux/ws"
 
 	"github.com/gorilla/websocket"
@@ -29,24 +30,15 @@ func wsServer(w http.ResponseWriter, r *http.Request) {
 	wsPool.Clients[name] = conn
 
 	go func() {
-		for {
-			message, err := ws.Read(conn)
+		message := <-view.RawFaceChan
+		for _, val := range wsPool.Clients {
+			err := ws.Send(val, &ws.Message{Type: websocket.TextMessage, Body: message})
 			if err != nil {
 				log.Println(err)
 				conn.Close()
 				delete(wsPool.Clients, name)
 				return
 			}
-			for _, val := range wsPool.Clients {
-				err := ws.Send(val, message)
-				if err != nil {
-					log.Println(err)
-					conn.Close()
-					delete(wsPool.Clients, name)
-					return
-				}
-			}
-			log.Printf("%s sent: %s\n", conn.RemoteAddr(), string(message.Body))
 		}
 	}()
 }

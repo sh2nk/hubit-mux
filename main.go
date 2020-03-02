@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	send   chan *bytes.Buffer
 	camera *view.Camera
 
 	//Пул клиентов, получающий поток
