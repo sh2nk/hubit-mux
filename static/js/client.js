@@ -4,16 +4,19 @@ var pNeutral = document.getElementById("progress-neutral").style;
 var pSad = document.getElementById("progress-sad").style;
 var pFearful = document.getElementById("progress-fearful").style;
 var pDisgusted = document.getElementById("progress-disgusted").style;
-var pSUrprised = document.getElementById("progress-surprised").style;
+var pSurprised = document.getElementById("progress-surprised").style;
 
 var i = 0;
 var increase = true;
 
 function pUpdate(){
-    pHappy.width = i+"%";
-    pSad.width = i+"%";
-    pAngry.width = i+"%";
+    pHappy.width = i+10+"%";
+    pSad.width = i+20+"%";
+    pAngry.width = i-10+"%";
     pNeutral.width = i+"%";
+    pFearful.width = i+5+"%";
+    pDisgusted.width = i+3+"%";
+    pSurprised.width = i-5+"%";
     if(increase){
         i++;
         if(i == 100){
@@ -27,4 +30,4 @@ function pUpdate(){
     }
 }
 
-let timerId = setInterval(pUpdate, 100);
+let timerId = setInterval(pUpdate, 50);
