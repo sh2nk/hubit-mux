@@ -6,10 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"hubit-mux/utils"
-	"hubit-mux/view"
-
 	"github.com/gorilla/websocket"
+	"github.com/sh2nk/hubit-mux/utils"
+	"github.com/sh2nk/hubit-mux/view"
 )
 
 var (

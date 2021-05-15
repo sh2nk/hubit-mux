@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"hubit-mux/view"
 	"io"
 	"log"
 	"mime/multipart"
@@ -12,7 +11,8 @@ import (
 	"net/textproto"
 	"strconv"
 
-	"hubit-mux/ws"
+	"github.com/sh2nk/hubit-mux/view"
+	"github.com/sh2nk/hubit-mux/ws"
 
 	"github.com/gorilla/websocket"
 	uuid "github.com/satori/go.uuid"
@@ -90,7 +90,7 @@ func stream(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", `multipart/x-mixed-replace;boundary=`+multipartWriter.Boundary())
 
 	stream := make(chan *bytes.Buffer)
-	name := uuid.Must(uuid.NewV4()).String()
+	name := uuid.Must(uuid.NewV4(), nil).String()
 
 	func() {
 		streamPool.Lock()

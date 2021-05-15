@@ -2,12 +2,12 @@ package view
 
 import (
 	"bytes"
-	"hubit-mux/utils"
 	"io/ioutil"
 	"log"
 	"strings"
 
 	"github.com/blackjack/webcam"
+	"github.com/sh2nk/hubit-mux/utils"
 )
 
 type framebuf struct {
